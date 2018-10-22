@@ -12,11 +12,9 @@ use ansi_term::Colour::*;
 
 //constants
 const SIZE: Vec2 = Vec2 { x: 17, y: 29 };
-const NUM_TREASURE: usize = 5;
-
 
 pub fn print_header() {
-    println!("Welcome to Treasure Hunter!\n");
+    println!("Treasure Hunter!\n");
     println!("Use w, a, s, d to move");
     println!("Use q to quit");
     println!("Collect all the treasure\n");
@@ -36,8 +34,8 @@ pub fn collect_input() -> String {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec2 {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 impl Vec2 {
@@ -63,7 +61,6 @@ impl Command {
 }
 
 
-//TODO: implement dynamic sizing
 pub struct Map {
     map: [[char; SIZE.y]; SIZE.x],
     player: Vec2,
@@ -71,7 +68,8 @@ pub struct Map {
 }
 
 impl Map {
-    pub fn new() -> Map {
+    //TODO: implement dynamic sizing
+    pub fn new(size: Vec2, num_treasures: i32) -> Map {
         let mut m = Map {
             map: [['#'; SIZE.y]; SIZE.x],
             player: Vec2::new(1, 1),
@@ -90,7 +88,6 @@ impl Map {
             if cur.x < SIZE.x - 3 { nbr[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
             if cur.y > 2 { nbr[2] = (m.map[cur.x][cur.y - 2] == '#') as i32 }
             if cur.x > 2 { nbr[3] = (m.map[cur.x - 2][cur.y] == '#') as i32 }
-
 
             //has nbrs
             if (nbr[0] | nbr[1] | nbr[2] | nbr[3]) != 0 {
@@ -147,11 +144,11 @@ impl Map {
         }
 
         //place treasures
-        for _ in 0..NUM_TREASURE {
+        for _ in 0..num_treasures {
             let mut x = thread_rng().gen_range(0, SIZE.x);
             let mut y = thread_rng().gen_range(0, SIZE.y);
 
-            while m.map[x][y] == '#' {
+            while m.map[x][y] != ' ' {
                 x = thread_rng().gen_range(0, SIZE.x);
                 y = thread_rng().gen_range(0, SIZE.y);
             }
@@ -209,7 +206,7 @@ impl Map {
         for c in input.chars() {
             self.map[self.player.x][self.player.y] = ' ';
 
-            match c { //TODO: fix x and y swap
+            match c {
                 'w' => {
                     if self.player.x > 0 && self.map[self.player.x - 1][self.player.y] != '#' {
                         self.player.x -= 1

@@ -1,0 +1,8 @@
+[package]
+name = "treasure_hunter"
+version = "0.1.0"
+authors = ["thomaslienbacher <lienbacher.tom@gmail.com>"]
+
+[dependencies]
+rand = "0.5.5"
+ansi_term = "0.11.0"

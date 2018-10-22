@@ -5,7 +5,7 @@ mod game;
 use game::*;
 
 fn main() {
-    let _ = ansi_term::enable_ansi_support();//ansi escape codes need to be enabled for windows
+    ansi_term::enable_ansi_support();//ansi escape codes need to be enabled for windows
 
     let command_map: Vec<Command> = vec![
         Command::new("quit", || { std::process::exit(0) }),
@@ -25,7 +25,7 @@ fn main() {
 
         map.move_player(input);//input gets validated inside functions
 
-        println!("\x1b[2J\x1b[H");
+        println!("\x1b[2J\x1b[H");//clear screen
 
         for c in &command_map {
             if c.cmd.as_str().eq(input) {

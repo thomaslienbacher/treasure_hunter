@@ -14,7 +14,6 @@ use ansi_term::Colour::*;
 const SIZE: Vec2 = Vec2 { x: 17, y: 29 };
 const NUM_TREASURE: usize = 5;
 
-//helpers
 
 pub fn print_header() {
     println!("Welcome to Treasure Hunter!\n");
@@ -34,6 +33,7 @@ pub fn collect_input() -> String {
     input
 }
 
+
 #[derive(Copy, Clone, Debug)]
 pub struct Vec2 {
     x: usize,
@@ -46,8 +46,6 @@ impl Vec2 {
     }
 }
 
-
-//command
 
 pub struct Command {
     pub cmd: String,
@@ -64,7 +62,6 @@ impl Command {
     }
 }
 
-//map
 
 //TODO: implement dynamic sizing
 pub struct Map {

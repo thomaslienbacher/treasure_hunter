@@ -29,11 +29,10 @@ fn main() {
             .help("Number of treasures"))
         .get_matches();
 
-    let mut size = Vec2::new(17, 29);
+    let mut size = Vec2::new(29, 17);
 
-    //TODO: fix panic when using this arg
     if let Some(mut values) = matches.values_of("size") {
-        size.x = match values.nth(0).unwrap().parse::<usize>() {//bug is propably caused by unwraping
+        size.x = match values.next().unwrap().parse::<usize>() {
             Ok(x) => { x }
             Err(err) => {
                 println!("Error: {}", err);
@@ -41,7 +40,7 @@ fn main() {
                 std::process::exit(1);
             }
         };
-        size.y = match values.nth(1).unwrap().parse::<usize>() {
+        size.y = match values.next().unwrap().parse::<usize>() {
             Ok(y) => { y }
             Err(err) => {
                 println!("Error: {}", err);
@@ -62,7 +61,7 @@ fn main() {
 
     let mut map = Map::new(size, num_treasures);
 
-    //println!("\x1b[2J\x1b[H");
+    println!("\x1b[2J\x1b[H");
 
     loop {
         //display

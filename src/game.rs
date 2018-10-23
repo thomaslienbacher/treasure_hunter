@@ -1,5 +1,6 @@
 extern crate rand;
 extern crate ansi_term;
+extern crate num;
 
 use std::io;
 use std::io::*;
@@ -10,11 +11,9 @@ use self::rand::prelude::*;
 use ansi_term::Colour::*;
 
 
-//constants
-const SIZE: Vec2 = Vec2 { x: 17, y: 29 };
-
 pub fn print_header() {
     println!("Treasure Hunter!\n");
+    println!("Use -h to get extra help");
     println!("Use w, a, s, d to move");
     println!("Use q to quit");
     println!("Collect all the treasure\n");
@@ -62,16 +61,29 @@ impl Command {
 
 
 pub struct Map {
-    map: [[char; SIZE.y]; SIZE.x],
+    map: Vec<Vec<char>>,
     player: Vec2,
     treasure_found: i32,
 }
 
 impl Map {
-    //TODO: implement dynamic sizing
-    pub fn new(size: Vec2, num_treasures: i32) -> Map {
+    pub fn new(mut size: Vec2, num_treasures: i32) -> Map {
+        if size.x % 2 == 0 {
+            size.x += 1;
+        }
+        if size.y % 2 == 0 {
+            size.y += 1;
+        }
+
+
+        let tx = num::clamp(size.x, 5 , 377);
+        let ty = num::clamp(size.y, 5 , 377);
+
+        size.x = ty;//values are swapped
+        size.y = tx;
+
         let mut m = Map {
-            map: [['#'; SIZE.y]; SIZE.x],
+            map: vec![vec!['#'; size.y]; size.x],
             player: Vec2::new(1, 1),
             treasure_found: 0,
         };
@@ -84,8 +96,8 @@ impl Map {
         loop {
             nbr = [0; 4];
 
-            if cur.y < SIZE.y - 3 { nbr[0] = (m.map[cur.x][cur.y + 2] == '#') as i32 }
-            if cur.x < SIZE.x - 3 { nbr[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
+            if cur.y < size.y - 3 { nbr[0] = (m.map[cur.x][cur.y + 2] == '#') as i32 }
+            if cur.x < size.x - 3 { nbr[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
             if cur.y > 2 { nbr[2] = (m.map[cur.x][cur.y - 2] == '#') as i32 }
             if cur.x > 2 { nbr[3] = (m.map[cur.x - 2][cur.y] == '#') as i32 }
 
@@ -145,12 +157,12 @@ impl Map {
 
         //place treasures
         for _ in 0..num_treasures {
-            let mut x = thread_rng().gen_range(0, SIZE.x);
-            let mut y = thread_rng().gen_range(0, SIZE.y);
+            let mut x = thread_rng().gen_range(0, size.x);
+            let mut y = thread_rng().gen_range(0, size.y);
 
             while m.map[x][y] != ' ' {
-                x = thread_rng().gen_range(0, SIZE.x);
-                y = thread_rng().gen_range(0, SIZE.y);
+                x = thread_rng().gen_range(0, size.x);
+                y = thread_rng().gen_range(0, size.y);
             }
 
             m.map[x][y] = 'T';
@@ -164,8 +176,8 @@ impl Map {
 
         println!("Treasure found: {}\n", self.treasure_found);
 
-        for x in 0..SIZE.x {
-            for y in 0..SIZE.y {
+        for x in 0..self.map.len() {
+            for y in 0..self.map[0].len() {
                 let s = self.map[x][y].to_string();
 
                 match self.map[x][y] {
@@ -213,7 +225,7 @@ impl Map {
                     }
                 }
                 's' => {
-                    if self.player.x < SIZE.x - 1 && self.map[self.player.x + 1][self.player.y] != '#' {
+                    if self.player.x < self.map.len() - 1 && self.map[self.player.x + 1][self.player.y] != '#' {
                         self.player.x += 1
                     }
                 }
@@ -223,7 +235,7 @@ impl Map {
                     }
                 }
                 'd' => {
-                    if self.player.y < SIZE.y - 1 && self.map[self.player.x][self.player.y + 1] != '#' {
+                    if self.player.y < self.map[0].len() - 1 && self.map[self.player.x][self.player.y + 1] != '#' {
                         self.player.y += 1
                     }
                 }

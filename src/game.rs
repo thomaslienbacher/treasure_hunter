@@ -76,8 +76,8 @@ impl Map {
         }
 
 
-        let tx = num::clamp(size.x, 5 , 377);
-        let ty = num::clamp(size.y, 5 , 377);
+        let tx = num::clamp(size.x, 5, 377);
+        let ty = num::clamp(size.y, 5, 377);
 
         size.x = ty;//values are swapped
         size.y = tx;
@@ -181,9 +181,9 @@ impl Map {
                 let s = self.map[x][y].to_string();
 
                 match self.map[x][y] {
-                    '#' => {print!("{}", White.paint(s))}
-                    'T' => {print!("{}", Yellow.paint(s))}
-                    'X' => {print!("{}", Red.paint(s))}
+                    '#' => { print!("{}", White.paint(s)) }
+                    'T' => { print!("{}", Yellow.paint(s)) }
+                    'X' => { print!("{}", Red.paint(s)) }
                     _ => { print!("{}", self.map[x][y]) }
                 }
             }
@@ -195,24 +195,11 @@ impl Map {
     }
 
     pub fn move_player(&mut self, input: &str) {
-        fn valid_input(input: &str) -> bool {
-            let mut valid = true;
-
-            for c in input.chars() {
-                match c {
-                    'w' => {}
-                    's' => {}
-                    'a' => {}
-                    'd' => {}
-                    _ => { valid = false }
-                }
+        for c in input.chars() {
+            match c {
+                'w' | 's' | 'a' | 'd'  => {}
+                _ => { return; }
             }
-
-            valid
-        }
-
-        if !valid_input(input) {
-            return;
         }
 
         for c in input.chars() {

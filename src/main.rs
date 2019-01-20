@@ -1,13 +1,12 @@
-extern crate ansi_term;
-extern crate clap;
-
 mod game;
 
-use game::*;
+use crate::game::*;
 use clap::{Arg, App};
 
 fn main() {
-    let _ = ansi_term::enable_ansi_support();//ansi escape codes need to be enabled for windows
+    #[cfg(windows)] {
+        let _ = ansi_term::enable_ansi_support();//ansi escape codes need to be enabled for windows
+    }
 
     let command_map: Vec<Command> = vec![
         Command::new("quit", || { std::process::exit(0) }),

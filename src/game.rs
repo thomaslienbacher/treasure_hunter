@@ -10,7 +10,6 @@ use std::collections::LinkedList;
 use self::rand::prelude::*;
 use ansi_term::Colour::*;
 
-
 pub fn print_header() {
     println!("Treasure Hunter!\n");
     println!("Use -h to get extra help");
@@ -21,7 +20,7 @@ pub fn print_header() {
 
 pub fn collect_input() -> String {
     print!("> ");
-    io::stdout().flush().expect("Could't flush stdout");
+    io::stdout().flush().expect("Couldn't flush stdout");
 
     let mut input = String::new();
 
@@ -197,7 +196,7 @@ impl Map {
     pub fn move_player(&mut self, input: &str) {
         for c in input.chars() {
             match c {
-                'w' | 's' | 'a' | 'd'  => {}
+                'w' | 's' | 'a' | 'd' => {}
                 _ => { return; }
             }
         }

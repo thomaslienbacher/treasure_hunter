@@ -1,19 +1,23 @@
-mod game;
+use clap::{App, Arg};
 
 use crate::game::*;
-use clap::{Arg, App};
+
+mod game;
+
+#[inline]
+fn clear_screen() {
+    println!("\x1b[2J\x1b[H");
+}
 
 fn main() {
     #[cfg(windows)] {
         let _ = ansi_term::enable_ansi_support();//ansi escape codes need to be enabled for windows
     }
 
-    let command_map: Vec<Command> = vec![
-        Command::new("quit", || { std::process::exit(0) }),
-        Command::new("q", || { std::process::exit(0) }),
-    ];
-
-    let matches = App::new("Treasure Hunter").version("0.1.0")
+    let matches = App::new("Treasure Hunter")
+        .author("Thomas Lienbacher <lienbacher.tom@gmail.com>")
+        .about("Small console game where you collect treasure in a maze")
+        .version(env!("CARGO_PKG_VERSION"))
         .arg(Arg::with_name("size")
             .short("s")
             .long("size")
@@ -60,7 +64,7 @@ fn main() {
 
     let mut map = Map::new(size, num_treasures);
 
-    println!("\x1b[2J\x1b[H");
+    clear_screen();
 
     loop {
         //display
@@ -68,17 +72,13 @@ fn main() {
         map.print();
 
         //update
-        let input_raw = collect_input().to_lowercase();
-        let input = input_raw.trim();
+        let input = collect_input().trim().to_lowercase();
+        map.move_player(input.as_str());//input gets validated inside function
+        clear_screen();
 
-        map.move_player(input);//input gets validated inside functions
-
-        println!("\x1b[2J\x1b[H");//clear screen
-
-        for c in &command_map {
-            if c.cmd.as_str().eq(input) {
-                c.exec();
-            }
+        match input.as_str() {
+            "q" | "quit" => { std::process::exit(0) }
+            _ => {}
         }
     }
 }

@@ -1,14 +1,9 @@
-extern crate rand;
-extern crate ansi_term;
-extern crate num;
-
+use std::collections::LinkedList;
 use std::io;
 use std::io::*;
-use std::boxed::*;
-use std::collections::LinkedList;
 
-use self::rand::prelude::*;
 use ansi_term::Colour::*;
+use rand::prelude::*;
 
 pub fn print_header() {
     println!("Treasure Hunter!\n");
@@ -23,7 +18,6 @@ pub fn collect_input() -> String {
     io::stdout().flush().expect("Couldn't flush stdout");
 
     let mut input = String::new();
-
     stdin().read_line(&mut input).expect("Couldn't get input from stdin");
 
     input
@@ -41,23 +35,6 @@ impl Vec2 {
         Vec2 { x, y }
     }
 }
-
-
-pub struct Command {
-    pub cmd: String,
-    func: Box<Fn()>,
-}
-
-impl Command {
-    pub fn new(cmd: &'static str, func: fn()) -> Command {
-        Command { cmd: String::from(cmd), func: Box::new(func) }
-    }
-
-    pub fn exec(&self) {
-        (self.func)();
-    }
-}
-
 
 pub struct Map {
     map: Vec<Vec<char>>,
@@ -89,21 +66,21 @@ impl Map {
 
         //generate maze
         let mut stack: LinkedList<Vec2> = LinkedList::new();
-        let mut nbr: [i32; 4];//top, right, bottom, left
+        let mut nbrs: [i32; 4];//top, right, bottom, left neighbors
         let mut cur = Vec2::new(1, 1);
 
         loop {
-            nbr = [0; 4];
+            nbrs = [0; 4];
 
-            if cur.y < size.y - 3 { nbr[0] = (m.map[cur.x][cur.y + 2] == '#') as i32 }
-            if cur.x < size.x - 3 { nbr[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
-            if cur.y > 2 { nbr[2] = (m.map[cur.x][cur.y - 2] == '#') as i32 }
-            if cur.x > 2 { nbr[3] = (m.map[cur.x - 2][cur.y] == '#') as i32 }
+            if cur.y < size.y - 3 { nbrs[0] = (m.map[cur.x][cur.y + 2] == '#') as i32 }
+            if cur.x < size.x - 3 { nbrs[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
+            if cur.y > 2 { nbrs[2] = (m.map[cur.x][cur.y - 2] == '#') as i32 }
+            if cur.x > 2 { nbrs[3] = (m.map[cur.x - 2][cur.y] == '#') as i32 }
 
             //has nbrs
-            if (nbr[0] | nbr[1] | nbr[2] | nbr[3]) != 0 {
+            if (nbrs[0] | nbrs[1] | nbrs[2] | nbrs[3]) != 0 {
                 let mut r = thread_rng().gen_range(0, 4);
-                while nbr[r] == 0 {
+                while nbrs[r] == 0 {
                     r = thread_rng().gen_range(0, 4)
                 }
 

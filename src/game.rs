@@ -42,6 +42,10 @@ pub struct Map {
     treasure_found: i32,
 }
 
+const WALL_CHAR: char = '█';
+const PLAYER_CHAR: char = 'X';
+const TREASURE_CHAR: char = 'T';
+
 impl Map {
     pub fn new(mut size: Vec2, num_treasures: i32) -> Map {
         if size.x % 2 == 0 {
@@ -59,7 +63,7 @@ impl Map {
         size.y = tx;
 
         let mut m = Map {
-            map: vec![vec!['#'; size.y]; size.x],
+            map: vec![vec![WALL_CHAR; size.y]; size.x],
             player: Vec2::new(1, 1),
             treasure_found: 0,
         };
@@ -72,10 +76,10 @@ impl Map {
         loop {
             nbrs = [0; 4];
 
-            if cur.y < size.y - 3 { nbrs[0] = (m.map[cur.x][cur.y + 2] == '#') as i32 }
-            if cur.x < size.x - 3 { nbrs[1] = (m.map[cur.x + 2][cur.y] == '#') as i32 }
-            if cur.y > 2 { nbrs[2] = (m.map[cur.x][cur.y - 2] == '#') as i32 }
-            if cur.x > 2 { nbrs[3] = (m.map[cur.x - 2][cur.y] == '#') as i32 }
+            if cur.y < size.y - 3 { nbrs[0] = (m.map[cur.x][cur.y + 2] == WALL_CHAR) as i32 }
+            if cur.x < size.x - 3 { nbrs[1] = (m.map[cur.x + 2][cur.y] == WALL_CHAR) as i32 }
+            if cur.y > 2 { nbrs[2] = (m.map[cur.x][cur.y - 2] == WALL_CHAR) as i32 }
+            if cur.x > 2 { nbrs[3] = (m.map[cur.x - 2][cur.y] == WALL_CHAR) as i32 }
 
             //has nbrs
             if (nbrs[0] | nbrs[1] | nbrs[2] | nbrs[3]) != 0 {
@@ -141,14 +145,14 @@ impl Map {
                 y = thread_rng().gen_range(0, size.y);
             }
 
-            m.map[x][y] = 'T';
+            m.map[x][y] = TREASURE_CHAR;
         }
 
         m
     }
 
     pub fn print(&mut self) {
-        self.map[self.player.x][self.player.y] = 'X';
+        self.map[self.player.x][self.player.y] = PLAYER_CHAR;
 
         println!("Treasure found: {}\n", self.treasure_found);
 
@@ -157,9 +161,9 @@ impl Map {
                 let s = self.map[x][y].to_string();
 
                 match self.map[x][y] {
-                    '#' => { print!("{}", White.paint(s)) }
-                    'T' => { print!("{}", Yellow.paint(s)) }
-                    'X' => { print!("{}", Red.paint(s)) }
+                    WALL_CHAR => { print!("{}", White.paint(s)) }
+                    TREASURE_CHAR => { print!("{}", Yellow.paint(s)) }
+                    PLAYER_CHAR => { print!("{}", Red.paint(s)) }
                     _ => { print!("{}", self.map[x][y]) }
                 }
             }
@@ -183,29 +187,29 @@ impl Map {
 
             match c {
                 'w' => {
-                    if self.player.x > 0 && self.map[self.player.x - 1][self.player.y] != '#' {
+                    if self.player.x > 0 && self.map[self.player.x - 1][self.player.y] != WALL_CHAR {
                         self.player.x -= 1
                     }
                 }
                 's' => {
-                    if self.player.x < self.map.len() - 1 && self.map[self.player.x + 1][self.player.y] != '#' {
+                    if self.player.x < self.map.len() - 1 && self.map[self.player.x + 1][self.player.y] != WALL_CHAR {
                         self.player.x += 1
                     }
                 }
                 'a' => {
-                    if self.player.y > 0 && self.map[self.player.x][self.player.y - 1] != '#' {
+                    if self.player.y > 0 && self.map[self.player.x][self.player.y - 1] != WALL_CHAR {
                         self.player.y -= 1
                     }
                 }
                 'd' => {
-                    if self.player.y < self.map[0].len() - 1 && self.map[self.player.x][self.player.y + 1] != '#' {
+                    if self.player.y < self.map[0].len() - 1 && self.map[self.player.x][self.player.y + 1] != WALL_CHAR {
                         self.player.y += 1
                     }
                 }
                 _ => {}
             }
 
-            if self.map[self.player.x][self.player.y] == 'T' {
+            if self.map[self.player.x][self.player.y] == TREASURE_CHAR {
                 self.treasure_found += 1;
             }
         }
